@@ -39,9 +39,9 @@ class GogoController
     static async Task Main()
     {
         Console.Title = "GoGo-Loco-Binder";
-        Console.WriteLine("TAB для полёта (Go/VRCEmote == 123)");
-        Console.WriteLine("Shift для ускорения во время полёта (Go/VRCEmote == 122 || Go/Float == 0.1 -> 1.0)");
-        Console.WriteLine("Ctrl чтобы опуститься (Go/VRCEmote == 120)\n");
+        Console.WriteLine("TAB to turn on fly mode (Go/VRCEmote == 123)");
+        Console.WriteLine("SHIFT to increase speed (Go/VRCEmote == 122 || Go/Float == 0.1 -> 1.0)");
+        Console.WriteLine("CTRL to descend (Go/VRCEmote == 120)\n");
 
 
         while (true)
