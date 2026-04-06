@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -14,6 +15,12 @@ class GogoController
 
     [DllImport("user32.dll")]
     private static extern short GetAsyncKeyState(int vKey);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
     private const int VK_TAB = 0x09;
     private const int VK_LSHIFT = 0xA0;
@@ -46,11 +53,28 @@ class GogoController
 
         while (true)
         {
+            IntPtr activeWindow = GetForegroundWindow();
+            GetWindowThreadProcessId(activeWindow, out int processId);
+
+            string activeProcessName = "";
+            try { activeProcessName = Process.GetProcessById(processId).ProcessName; } catch { }
+
+            if (activeProcessName != "VRChat")
+            {
+                _tabWasPressed = false;
+                ResetShift();
+                await Task.Delay(200);
+                continue;
+            }
+
             bool ctrlDown = (GetAsyncKeyState(VK_LCONTROL) & (int)KeyState.Pressed) != 0;
             bool shiftDown = (GetAsyncKeyState(VK_LSHIFT) & (int)KeyState.Pressed) != 0;
             bool tabDown = (GetAsyncKeyState(VK_TAB) & (int)KeyState.Pressed) != 0;
 
             bool isModeActive = (_lastEmoteSent == 123 || _lastEmoteSent == 120 || _lastEmoteSent == 122);
+
+            bool altDown = (GetAsyncKeyState(0x12) & (int)KeyState.Pressed) != 0;
+            if (altDown) tabDown = false;
 
             if (ctrlDown && isModeActive)
             {
